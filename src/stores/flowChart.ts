@@ -5,6 +5,7 @@ import type { FlowNode, VueFlowNode, VueFlowEdge } from '@/types'
 export const useFlowChartStore = defineStore('flowChart', () => {
   // State
   const nodes = ref<FlowNode[]>([])
+  const nodePositions = ref<Map<string, { x: number; y: number }>>(new Map())
   const selectedNodeId = ref<string | null>(null)
   const isDrawerOpen = ref(false)
 
@@ -17,11 +18,17 @@ export const useFlowChartStore = defineStore('flowChart', () => {
   // Convert raw nodes to Vue Flow format
   const vueFlowNodes = computed<VueFlowNode[]>(() => {
     return nodes.value.map((node, index) => {
-      // Calculate position based on hierarchy (can be improved later)
-      const position = calculateNodePosition(node, index)
+      const nodeId = String(node.id)
+      // Use stored position if available, otherwise calculate initial position
+      const position = nodePositions.value.get(nodeId) ?? calculateNodePosition(node, index)
+
+      // Store position if not already stored (for new nodes)
+      if (!nodePositions.value.has(nodeId)) {
+        nodePositions.value.set(nodeId, position)
+      }
 
       return {
-        id: String(node.id),
+        id: nodeId,
         type: node.type,
         position,
         data: node,
@@ -35,11 +42,19 @@ export const useFlowChartStore = defineStore('flowChart', () => {
 
     nodes.value.forEach((node) => {
       if (node.parentId !== -1 && node.parentId !== null) {
-        edges.push({
+        const edge: VueFlowEdge = {
           id: `e-${node.parentId}-${node.id}`,
           source: String(node.parentId),
           target: String(node.id),
-        })
+        }
+
+        // If this is a dateTimeConnector, connect from the correct handle on the parent
+        if (node.type === 'dateTimeConnector') {
+          const connectorData = node.data as { connectorType: 'success' | 'failure' }
+          edge.sourceHandle = connectorData.connectorType // 'success' or 'failure'
+        }
+
+        edges.push(edge)
       }
     })
 
@@ -48,7 +63,8 @@ export const useFlowChartStore = defineStore('flowChart', () => {
 
   // Actions
   function setNodes(newNodes: FlowNode[]) {
-    nodes.value = newNodes
+    // Create a mutable copy - Vue Query returns readonly arrays
+    nodes.value = [...newNodes]
   }
 
   function selectNode(nodeId: string | null) {
@@ -69,19 +85,41 @@ export const useFlowChartStore = defineStore('flowChart', () => {
   }
 
   function deleteNode(nodeId: string) {
-    nodes.value = nodes.value.filter((node) => String(node.id) !== nodeId)
+    // Find child nodes (nodes with parentId === nodeId) to cascade delete
+    const childNodeIds = nodes.value
+      .filter((node) => String(node.parentId) === nodeId)
+      .map((node) => String(node.id))
+
+    // Delete the node and its children
+    nodes.value = nodes.value.filter(
+      (node) => String(node.id) !== nodeId && !childNodeIds.includes(String(node.id)),
+    )
+
+    // Also remove their stored positions
+    nodePositions.value.delete(nodeId)
+    childNodeIds.forEach((id) => nodePositions.value.delete(id))
+
     if (selectedNodeId.value === nodeId) {
       closeDrawer()
     }
   }
 
   function addNode(node: FlowNode) {
-    nodes.value.push(node)
+    nodes.value = [...nodes.value, node]
+  }
+
+  function updateNodeParent(nodeId: string, newParentId: string | number) {
+    const index = nodes.value.findIndex((node) => String(node.id) === nodeId)
+    if (index !== -1) {
+      nodes.value = nodes.value.map((node, i) =>
+        i === index ? { ...node, parentId: newParentId } : node,
+      )
+    }
   }
 
   function updateNodePosition(nodeId: string, position: { x: number; y: number }) {
-    // This can be used to persist node positions if needed
-    console.log(`Node ${nodeId} moved to`, position)
+    // Store the new position so it persists
+    nodePositions.value.set(nodeId, position)
   }
 
   // Helper function to calculate node positions
@@ -128,7 +166,7 @@ export const useFlowChartStore = defineStore('flowChart', () => {
     updateNode,
     deleteNode,
     addNode,
+    updateNodeParent,
     updateNodePosition,
   }
 })
-

@@ -1,36 +1,26 @@
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="flex flex-col gap-5 h-full">
     <!-- Title Field -->
-    <div class="flex flex-col gap-1.5">
-      <label class="text-sm font-medium text-slate-400">Title</label>
-      <input
-        v-model="title"
-        type="text"
-        class="px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg text-slate-100 text-sm transition-colors focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
-        placeholder="Enter title..."
-        :disabled="!editable"
-      />
+    <div class="form-field">
+      <h3>Title</h3>
+      <!-- Title input field -->
+      <input v-model="title" type="text" placeholder="Enter title..." />
     </div>
 
     <!-- Comment Field -->
-    <div class="flex flex-col gap-1.5">
-      <label class="text-sm font-medium text-slate-400">Comment</label>
+    <div class="form-field">
+      <h3>Comment</h3>
+      <!-- Comment textarea field -->
       <textarea
         v-model="comment"
-        class="px-4 py-2.5 bg-slate-900 border border-slate-600 rounded-lg text-slate-100 text-sm transition-colors focus:outline-none focus:border-blue-500 disabled:opacity-60 disabled:cursor-not-allowed resize-none"
+        class="resize-none"
         placeholder="Enter comment..."
-        :disabled="!editable"
         rows="5"
       ></textarea>
     </div>
 
     <!-- Save Button -->
-    <button
-      v-if="editable"
-      class="px-6 py-3 bg-blue-500 border-none rounded-lg text-white font-medium cursor-pointer transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-      @click="handleSave"
-      :disabled="isUpdating"
-    >
+    <button class="btn-save" @click="handleSave" :disabled="isUpdating">
       {{ isUpdating ? 'Saving...' : 'Save Changes' }}
     </button>
   </div>
@@ -43,29 +33,36 @@ import type { FlowNode, AddCommentData } from '@/types'
 
 interface Props {
   node: FlowNode
-  editable: boolean
 }
-
+// declare props to receive the node data
 const props = defineProps<Props>()
+// declare emit to send the saved event to the parent component
+const emit = defineEmits<{ saved: [] }>()
+// use the flow nodes composable to update the node data
 const { updateNode, isUpdating } = useFlowNodes()
 
 const title = ref(props.node.name || '')
 const comment = ref('')
 
+// watch for changes to the node data
 watch(
   () => props.node,
   (node) => {
     title.value = node.name || ''
     comment.value = (node.data as AddCommentData).comment
   },
-  { immediate: true }
+  { immediate: true },
 )
 
+// handle the save event
 function handleSave() {
+  // update the node data
   updateNode({
     ...props.node,
     name: title.value,
     data: { comment: comment.value },
   })
+  // send the saved event to the node drawer component
+  emit('saved')
 }
 </script>

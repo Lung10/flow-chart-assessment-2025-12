@@ -1,154 +1,144 @@
 <template>
   <!-- Create Button -->
-  <button @click="openModal">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      <line x1="12" y1="5" x2="12" y2="19"></line>
-      <line x1="5" y1="12" x2="19" y2="12"></line>
-    </svg>
+  <button class="btn-create-node" @click="openCard">
+    <Icon name="plus" />
     Create New Node
   </button>
 
-  <!-- Modal -->
-  <Teleport to="body">
-    <Transition name="modal">
-      <div
-        v-if="isModalOpen"
-        class="fixed inset-0 bg-black/60 flex items-center justify-center z-1 p-4"
-      >
-        <!-- <div class="w-full max-w-[480px] bg-slate-800 rounded-2xl shadow-2xl"> -->
-        <card>
-          <header class="flex justify-between items-center px-6 py-4 border-b border-slate-700">
-            <h2>Create New Node</h2>
-            <button
-              class="justify-end w-fit px-1.5 py-1 rounded-full hover:bg-(--color-hover)"
-              @click="closeModal"
-              aria-label="Close"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </header>
+  <!-- Card Dialog -->
+  <div v-if="isCardOpen" class="dialog-backdrop animate-fade-in">
+    <div class="card animate-fade-in">
+      <header class="form-header">
+        <h2>Create New Node</h2>
+        <button class="btn-close" @click="closeCard" aria-label="Close">
+          <Icon name="close" />
+        </button>
+      </header>
 
-          <form class="p-6 flex flex-col gap-5" @submit.prevent="handleSubmit">
-            <!-- Title -->
-            <div class="flex flex-col gap-1.5">
-              <h3>Title <span class="text-red-500">*</span></h3>
-              <input
-                v-model="form.title"
-                type="text"
-                :class="{ 'input-error': errors.title }"
-                placeholder="Enter node title..."
-              />
-              <span v-if="errors.title" class="text-xs text-red-500">{{ errors.title }}</span>
-            </div>
+      <!-- Form for creating a new node -->
+      <form class="form-container" @submit.prevent="handleSubmit">
+        <!-- Title input field -->
+        <div class="form-field">
+          <h3>Title <span class="text-(--color-error)">*</span></h3>
+          <input
+            v-model="form.title"
+            type="text"
+            :class="{ 'input-error': errors.title }"
+            placeholder="Enter node title..."
+          />
+          <span v-if="errors.title" class="text-xs text-(--color-error)">{{ errors.title }}</span>
+        </div>
 
-            <!-- Description -->
-            <div class="flex flex-col gap-1.5">
-              <h3>Description</h3>
-              <textarea
-                v-model="form.description"
-                class="resize-none"
-                :class="{ 'input-error': errors.description }"
-                placeholder="Enter description..."
-                rows="3"
-              ></textarea>
-              <span v-if="errors.description" class="text-xs text-red-500">{{
-                errors.description
-              }}</span>
-            </div>
+        <!-- Description input field-->
+        <div class="form-field">
+          <h3>Description<span class="text-(--color-error)">*</span></h3>
+          <textarea
+            v-model="form.description"
+            class="resize-none"
+            :class="{ 'input-error': errors.description }"
+            placeholder="Enter description..."
+            rows="3"
+          ></textarea>
+          <span v-if="errors.description" class="text-xs text-(--color-error)">{{
+            errors.description
+          }}</span>
+        </div>
 
-            <!-- Type -->
-            <div class="flex flex-col gap-1.5">
-              <h3>Type of Node</h3>
-              <select v-model="form.type" :class="{ 'input-error': errors.type }">
-                <option value="sendMessage">Send Message</option>
-                <option value="addComment">Add Comment</option>
-                <option value="businessHours">Business Hours</option>
-              </select>
-              <span v-if="errors.type" class="text-xs text-red-500">{{ errors.type }}</span>
-            </div>
+        <!-- Type select field -->
+        <div class="form-field">
+          <h3>Type of Node</h3>
+          <select v-model="form.type" :class="{ 'input-error': errors.type }">
+            <option value="sendMessage">Send Message</option>
+            <option value="addComment">Add Comment</option>
+            <option value="businessHours">Business Hours</option>
+          </select>
+          <span v-if="errors.type" class="text-xs text-(--color-error)">{{ errors.type }}</span>
+        </div>
 
-            <!-- Actions -->
-            <div class="flex gap-3 mt-2">
-              <button
-                type="button"
-                class="flex-1 py-2.5 bg-slate-700 text-slate-300 border-none rounded-lg font-medium cursor-pointer transition-colors hover:bg-slate-600 hover:text-slate-100"
-                @click="closeModal"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                class="flex-1 py-2.5 bg-blue-500 text-white border-none rounded-lg font-medium cursor-pointer transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                :disabled="isCreating"
-              >
-                {{ isCreating ? 'Creating...' : 'Create Node' }}
-              </button>
-            </div>
-          </form>
-        </card>
-      </div>
-    </Transition>
-  </Teleport>
+        <!-- Actions buttons -->
+        <div class="flex justify-around gap-3 mt-2">
+          <button type="button" @click="closeCard" class="btn-cancel">Cancel</button>
+          <button type="submit" class="btn-submit-node" :disabled="isCreating">
+            {{ isCreating ? 'Creating...' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { h, ref } from 'vue'
+import { ref } from 'vue'
 import { useFlowNodes } from '@/composables/useFlowNodes'
 import { useNodeValidation } from '@/composables/useNodeValidation'
+import { useFlowChartStore } from '@/stores/flowChart'
+import Icon from '@/components/icons/Icon.vue'
 import type {
   CreateNodeForm,
   FlowNode,
   SendMessageData,
   AddCommentData,
   DateTimeData,
+  DateTimeConnectorData,
 } from '@/types'
 
+// Get functions from composables
 const { createNode, isCreating } = useFlowNodes()
 const { errors, validateForm, clearErrors } = useNodeValidation()
 
-const isModalOpen = ref(false)
+// Use Pinia store for flow chart data
+const store = useFlowChartStore()
+
+const isCardOpen = ref(false) // initial state of the card to be closed
+
 const form = ref<CreateNodeForm>({
+  // initial state of the form to be empty and set to sendMessage type as default
   title: '',
   description: '',
   type: 'sendMessage',
 })
 
-function openModal() {
-  isModalOpen.value = true
-  clearErrors()
+function openCard() {
+  isCardOpen.value = true
+  clearErrors() // clear any errors from the previous form submission
 }
 
-function closeModal() {
-  isModalOpen.value = false
-  form.value = { title: '', description: '', type: 'sendMessage' }
-  clearErrors()
+function closeCard() {
+  isCardOpen.value = false
+  form.value = { title: '', description: '', type: 'sendMessage' } // reset the form to initial state
+  clearErrors() // clear any errors from the previous form submission
+}
+
+const maxAttempts = 100 // max attempts to generate a unique id
+
+// Generate unique 6-char ID, checking against existing node IDs
+function generateUniqueId(): string {
+  const existingIds = store.nodes.map((node) => String(node.id)) // get all existing node ids
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const newId = Math.random().toString(36).substring(2, 8) // generate a random 6-char id
+
+    if (!existingIds.includes(newId)) {
+      return newId // return the unique id if it is not in the existing ids
+    }
+  }
+
+  console.error('Unable to generate unique ID after', maxAttempts, 'attempts')
+  return '' // return an empty string if the unique id is not found after the max attempts
 }
 
 function handleSubmit() {
+  // Return if form is invalid
   if (!validateForm(form.value)) return
 
-  const nodeId = `node-${Date.now()}`
+  const nodeId = generateUniqueId() // generate a unique id for the new node
+  if (nodeId === '') {
+    return // exit if the unique id is empty after the max attempts
+  }
+
   let nodeData: SendMessageData | AddCommentData | DateTimeData
 
+  // Assign node data based on form type
   switch (form.value.type) {
     case 'sendMessage':
       nodeData = {
@@ -160,7 +150,12 @@ function handleSubmit() {
         comment: form.value.description,
       }
       break
-    case 'businessHours':
+    case 'businessHours': {
+      // Generate IDs for Success and Failure connector nodes
+      const successId = generateUniqueId()
+      const failureId = generateUniqueId()
+
+      // Default time slots for business hours
       nodeData = {
         times: [
           { startTime: '09:00', endTime: '17:00', day: 'mon' },
@@ -168,45 +163,61 @@ function handleSubmit() {
           { startTime: '09:00', endTime: '17:00', day: 'wed' },
           { startTime: '09:00', endTime: '17:00', day: 'thu' },
           { startTime: '09:00', endTime: '17:00', day: 'fri' },
+          { startTime: '09:00', endTime: '17:00', day: 'sat' },
+          { startTime: '09:00', endTime: '17:00', day: 'sun' },
         ],
-        connectors: [],
+        // Connectors for Success and Failure connector nodes
+        connectors: [successId, failureId],
+        // Default timezone for business hours
         timezone: 'UTC',
+        // Action for business hours
         action: 'businessHours',
       }
-      break
+
+      // Create the Business Hours node first
+      const businessHoursNode: FlowNode = {
+        id: nodeId,
+        parentId: -1,
+        type: 'dateTime',
+        name: form.value.title,
+        data: nodeData,
+      }
+      createNode(businessHoursNode) // create the business hours node
+
+      // Auto-create Success connector node
+      const successNode: FlowNode = {
+        id: successId,
+        parentId: nodeId, // Connected to Business Hours node
+        type: 'dateTimeConnector',
+        name: 'Success',
+        data: { connectorType: 'success' } as DateTimeConnectorData,
+      }
+      createNode(successNode) // create the success node
+
+      // Auto-create Failure connector node
+      const failureNode: FlowNode = {
+        id: failureId,
+        parentId: nodeId, // Connected to Business Hours node
+        type: 'dateTimeConnector',
+        name: 'Failure',
+        data: { connectorType: 'failure' } as DateTimeConnectorData,
+      }
+      createNode(failureNode) // create the failure node
+      closeCard() // close the card
+      return // exit after creating the nodes for businessHours
+    }
   }
 
+  // create the new node for sendMessage or addComment (businessHours returns early above)
   const newNode: FlowNode = {
     id: nodeId,
-    parentId: -1,
-    type: form.value.type === 'businessHours' ? 'dateTime' : form.value.type,
+    parentId: -1, // -1 = orphan node (no parent); assigned -1 to all user-created nodes
+    type: form.value.type,
     name: form.value.title,
     data: nodeData,
   }
 
-  createNode(newNode)
-  closeModal()
+  createNode(newNode) // create the new node
+  closeCard() // close the card
 }
 </script>
-
-<style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.modal-enter-active > div,
-.modal-leave-active > div {
-  transition: transform 0.2s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-from > div,
-.modal-leave-to > div {
-  transform: scale(0.95);
-}
-</style>

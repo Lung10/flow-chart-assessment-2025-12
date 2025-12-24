@@ -1,106 +1,99 @@
 <template>
-  <Transition name="drawer">
-    <div
-      v-if="store.isDrawerOpen && selectedNode"
-      class="fixed inset-0 bg-black/50 z-50 flex justify-end"
-      @click.self="handleClose"
-    >
-      <aside
-        class="w-full max-w-[420px] h-full bg-slate-800 flex flex-col shadow-[-4px_0_15px_rgba(0,0,0,0.2)]"
-      >
-        <!-- Header -->
-        <header class="flex justify-between items-center px-6 py-4 border-b border-slate-700">
-          <h2 class="text-lg md:text-xl font-semibold text-slate-100 truncate pr-2">
-            {{ nodeTitle }}
-          </h2>
-          <button
-            class="flex items-center justify-center w-9 h-9 bg-transparent border-none rounded-lg text-slate-400 cursor-pointer transition-all hover:bg-slate-700 hover:text-slate-100"
-            @click="handleClose"
-            aria-label="Close drawer"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </header>
+  <!-- Node Drawer -->
+  <div
+    v-if="isVisible && selectedNode"
+    :class="['drawer-backdrop', isClosing ? 'animate-fade-out' : 'animate-fade-in']"
+  >
+    <div :class="['drawer', isClosing ? 'animate-slide-out-right' : 'animate-slide-in-right']">
+      <!-- Header -->
+      <header class="drawer-header">
+        <h2>{{ nodeTitle }}</h2>
+        <button class="btn-close" @click="handleClose" aria-label="Close drawer">
+          <Icon name="close" :size="24" />
+        </button>
+      </header>
 
-        <!-- Content based on node type -->
-        <div class="flex-1 p-6 overflow-y-auto">
-          <template v-if="selectedNode.type === 'sendMessage'">
-            <SendMessageDrawer :node="selectedNode" :editable="isEditable" />
-          </template>
+      <!-- Display content based on selected node type -->
+      <div class="drawer-content">
+        <!-- Send Message Drawer -->
+        <SendMessageDrawer
+          v-if="selectedNode.type === 'sendMessage'"
+          :node="selectedNode"
+          @saved="handleClose"
+        />
 
-          <template v-else-if="selectedNode.type === 'addComment'">
-            <AddCommentDrawer :node="selectedNode" :editable="isEditable" />
-          </template>
+        <!-- Add Comment Drawer -->
+        <AddCommentDrawer
+          v-else-if="selectedNode.type === 'addComment'"
+          :node="selectedNode"
+          @saved="handleClose"
+        />
 
-          <template v-else-if="selectedNode.type === 'dateTime'">
-            <BusinessHoursDrawer :node="selectedNode" :editable="isEditable" />
-          </template>
+        <!-- Business Hours Drawer -->
+        <BusinessHoursDrawer
+          v-else-if="selectedNode.type === 'dateTime'"
+          :node="selectedNode"
+          @saved="handleClose"
+        />
 
-          <template v-else>
-            <div class="p-4 bg-slate-700 rounded-lg text-slate-400 text-center">
-              <p>This node is for display only and cannot be edited.</p>
-            </div>
-          </template>
+        <!-- Message Node Drawer for display only -->
+        <div v-else class="p-4 bg-(--color-description-box) rounded-lg text-center">
+          <p>This node is for display only and cannot be edited.</p>
         </div>
+      </div>
 
-        <!-- Footer with delete button -->
-        <footer v-if="isEditable" class="px-6 py-4 border-t border-slate-700">
-          <button
-            class="flex items-center justify-center gap-2 w-full py-3 bg-red-600 text-white border-none rounded-lg font-medium cursor-pointer transition-all hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            @click="handleDelete"
-            :disabled="isDeleting"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path
-                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-              ></path>
-            </svg>
-            {{ isDeleting ? 'Deleting...' : 'Delete Node' }}
-          </button>
-        </footer>
-      </aside>
+      <!-- Footer with delete button -->
+      <footer v-if="isEditable" class="drawer-footer">
+        <button class="btn-delete" @click="handleDelete" :disabled="isDeleting">
+          <Icon name="delete" :size="18" />
+          {{ isDeleting ? 'Deleting...' : 'Delete Node' }}
+        </button>
+      </footer>
     </div>
-  </Transition>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useFlowChartStore } from '@/stores/flowChart'
 import { useFlowNodes } from '@/composables/useFlowNodes'
+import Icon from '@/components/icons/Icon.vue'
 import SendMessageDrawer from './SendMessageDrawer.vue'
 import AddCommentDrawer from './AddCommentDrawer.vue'
 import BusinessHoursDrawer from './BusinessHoursDrawer.vue'
 
+// Use Pinia store for flow chart data
 const store = useFlowChartStore()
+
+// use the flow nodes composable to delete the node
 const { deleteNode, isDeleting } = useFlowNodes()
 
+// get the selected node from the store
 const selectedNode = computed(() => store.selectedNode)
 
+// State for closing animation and visibility
+const isClosing = ref(false)
+const isVisible = ref(false)
+
+// Sync visibility with store, handle closing animation
+watch(
+  () => store.isDrawerOpen && store.selectedNode,
+  (shouldOpen) => {
+    if (shouldOpen) {
+      isClosing.value = false
+      isVisible.value = true
+    }
+  },
+  { immediate: true },
+)
+
+// Get the title of the selected node
 const nodeTitle = computed(() => {
   if (!selectedNode.value) return ''
   return selectedNode.value.name || getDefaultTitle(selectedNode.value.type)
 })
 
+// Get the default title of the selected node
 function getDefaultTitle(type: string): string {
   const titles: Record<string, string> = {
     trigger: 'Trigger',
@@ -112,40 +105,27 @@ function getDefaultTitle(type: string): string {
   return titles[type] || 'Node'
 }
 
+// Handle closing the drawer
 function handleClose() {
-  store.closeDrawer()
+  isClosing.value = true
+  // Wait for animation to finish before actually closing
+  setTimeout(() => {
+    store.closeDrawer()
+    isVisible.value = false
+    isClosing.value = false
+  }, 300) // Match animation duration
 }
 
+// Handle deleting the selected node
 function handleDelete() {
   if (store.selectedNodeId && confirm('Are you sure you want to delete this node?')) {
     deleteNode(store.selectedNodeId)
   }
 }
 
+// Check if the selected node is editable
 const isEditable = computed(() => {
   if (!selectedNode.value) return false
   return selectedNode.value.type !== 'dateTimeConnector' && selectedNode.value.type !== 'trigger'
 })
 </script>
-
-<style scoped>
-.drawer-enter-active,
-.drawer-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.drawer-enter-active aside,
-.drawer-leave-active aside {
-  transition: transform 0.3s ease;
-}
-
-.drawer-enter-from,
-.drawer-leave-to {
-  opacity: 0;
-}
-
-.drawer-enter-from aside,
-.drawer-leave-to aside {
-  transform: translateX(100%);
-}
-</style>

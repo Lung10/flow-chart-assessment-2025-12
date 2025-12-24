@@ -1,29 +1,76 @@
+/* ========================================
+   FLOW CHART BUILDER - MAIN STYLES
+   ======================================== */
+
 @import 'tailwindcss';
 
 /* Vue Flow Required Styles */
 @import '@vue-flow/core/dist/style.css';
 @import '@vue-flow/core/dist/theme-default.css';
 
-/* Base styles - lower specificity than utilities */
+/* ========================================
+   BASE LAYER - Foundation Styles
+   ======================================== */
 @layer base {
+  /* ----------------
+     CSS Variables
+     ---------------- */
   :root {
+    /* Theme Colors */
     --color-background: #fff6e1;
     --color-primary: #226fcc;
-    --color-primary-light: #cbdceb;
+    --color-primary-light: #72acdf;
     --color-secondary: #f9f8f6;
     --color-error: #ef4444;
     --color-success: #22c55e;
     --color-description: #6b6e74;
-    --color-hover: #cbdceb;
+    --color-description-box: #e2ebf3;
+    --color-hover-dark: #1a5aa8;
+
+    /* Node Colors - Trigger (Amber) */
+    --node-trigger-bg-from: #fef3c7;
+    --node-trigger-bg-to: #fde68a;
+    --node-trigger-border: #f59e0b;
+    --node-trigger-title: #92400e;
+    --node-trigger-subtitle: #b45309;
+
+    /* Node Colors - Message (Blue) */
+    --node-message-bg-from: #dbeafe;
+    --node-message-bg-to: #bfdbfe;
+    --node-message-border: #3b82f6;
+    --node-message-title: #1e40af;
+    --node-message-subtitle: #2563eb;
+
+    /* Node Colors - Comment (Purple) */
+    --node-comment-bg-from: #f3e8ff;
+    --node-comment-bg-to: #e9d5ff;
+    --node-comment-border: #a855f7;
+    --node-comment-title: #7e22ce;
+    --node-comment-subtitle: #9333ea;
+
+    /* Node Colors - Business Hours (Pink) */
+    --node-business-bg-from: #fce7f3;
+    --node-business-bg-to: #fbcfe8;
+    --node-business-border: #ec4899;
+    --node-business-title: #be185d;
+    --node-business-subtitle: #db2777;
+
+    /* Node Colors - Status Success (Green) */
+    --node-success-bg-from: #dcfce7;
+    --node-success-bg-to: #bbf7d0;
+    --node-success-border: #22c55e;
+    --node-success-text: #15803d;
+
+    /* Node Colors - Status Failure (Red) */
+    --node-failure-bg-from: #fee2e2;
+    --node-failure-bg-to: #fecaca;
+    --node-failure-border: #ef4444;
+    --node-failure-text: #b91c1c;
   }
 
-  html,
-  body {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-  }
-
+  /* ----------------
+     Body & App
+     ---------------- */
   body {
     background-color: var(--color-background);
     color: var(--color-secondary);
@@ -32,12 +79,9 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  #app {
-    height: 100%;
-    width: 100%;
-  }
-
-  /* Typography */
+  /* ----------------
+     Typography
+     ---------------- */
   h1 {
     color: var(--color-secondary);
     font-size: 2rem;
@@ -65,65 +109,11 @@
     line-height: 1.6;
   }
 
-  button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 10.25rem;
-    height: 2rem;
-    color: var(--color-primary);
-    background-color: var(--color-secondary);
-    border: none;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    font-size: 0.875rem;
-    cursor: pointer;
-  }
-
-  card {
-    width: 80%;
-    max-width: 45rem;
-    height: auto;
-    background-color: var(--color-secondary);
-    border-radius: 0.5rem;
-    padding: 1rem;
-  }
-
-  /* Form Inputs */
-  input {
-    padding: 0.625rem 1rem;
-    background-color: var(--color-secondary);
-    border: 1px solid #475569;
-    border-radius: 0.5rem;
-    color: #000000;
-    font-size: 0.875rem;
-  }
-
-  input:focus {
-    border-width: 2px;
-  }
-
-  input-error {
-    border-color: var(--color-error);
-  }
-
-  textarea {
-    padding: 0.625rem 1rem;
-    background-color: var(--color-secondary);
-    border: 1px solid #475569;
-    border-radius: 0.5rem;
-    color: #000000;
-    font-size: 0.875rem;
-  }
-
-  textarea:focus {
-    border-width: 2px;
-  }
-
-  textarea-error {
-    border-color: var(--color-error);
-  }
-
+  /* ----------------
+     Form Elements
+     ---------------- */
+  input,
+  textarea,
   select {
     padding: 0.625rem 1rem;
     background-color: var(--color-secondary);
@@ -133,46 +123,738 @@
     font-size: 0.875rem;
   }
 
-  select-error {
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-width: 2px;
+  }
+
+  .input-error {
     border-color: var(--color-error);
   }
 
-  /* Mobile Responsive */
-  @media (max-width: 600px) {
-    h1 {
-      font-size: 1.3rem;
-    }
+  /* ----------------
+     Button Base
+     ---------------- */
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+}
 
-    h2 {
-      font-size: 1.2rem;
-    }
+/* ========================================
+   COMPONENTS LAYER - Reusable UI Components
+   ======================================== */
+@layer components {
+  /* ================
+     DIALOG / MODAL
+     ================ */
+  .dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: rgb(0 0 0 / 0.6);
+    z-index: 1;
+    animation: fadeIn 0.2s ease forwards;
+  }
 
-    h3 {
-      font-size: 0.875rem;
-    }
+  /* ================
+     CARD
+     ================ */
+  .card {
+    width: 80%;
+    max-width: 45rem;
+    height: auto;
+    background-color: var(--color-secondary);
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
 
-    p {
-      font-size: 0.875rem;
-    }
+  /* ================
+     FORM COMPONENTS
+     ================ */
 
-    button {
-      width: 8rem;
-      height: 1.75rem;
-      font-size: 0.7rem;
-      border-radius: 0.375rem;
-    }
+  /* Form Header - title and close button */
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1.5rem;
+  }
 
-    card {
-      width: 95%;
-      padding: 0.75rem;
-    }
+  .form-header h2 {
+    flex-basis: 90%;
+  }
 
-    input,
-    textarea,
-    select {
-      padding: 0.5rem 0.75rem;
-      font-size: 0.75rem;
-      border-radius: 0.375rem;
+  .form-header .btn-close {
+    flex-basis: 10%;
+    max-width: 2.25rem;
+  }
+
+  /* Form Container - wraps form fields */
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.5rem 1.5rem 0.75rem;
+  }
+
+  /* Form Field - label + input wrapper */
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .form-field textarea {
+    flex-basis: 90%;
+  }
+
+  .form-field .btn-remove {
+    flex-basis: 10%;
+    max-width: 2rem;
+  }
+
+  /* ================
+     INFO BOX
+     ================ */
+  .info-box {
+    padding: 0.75rem;
+    background-color: var(--color-description-box);
+    border-radius: 0.5rem;
+  }
+
+  .info-box p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-description);
+    line-height: 1.6;
+  }
+
+  /* ================
+     TIME SLOTS (Business Hours)
+     ================ */
+  .time-slots-header {
+    display: flex;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-hover);
+  }
+
+  .time-slots-header span:first-child {
+    width: 3.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-description);
+  }
+
+  .time-slots-header span:last-child {
+    flex: 1;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-description);
+    text-align: center;
+  }
+
+  .time-slot-row {
+    display: flex;
+    align-items: center;
+  }
+
+  .time-slot-day {
+    width: 3.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-description);
+  }
+
+  /* ================
+     DRAWER
+     ================ */
+  .drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: flex-end;
+    background-color: rgb(0 0 0 / 0.6);
+    z-index: 1;
+  }
+
+  .drawer {
+    width: 90%;
+    max-width: 40rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-secondary);
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #cbd5e1;
+  }
+
+  .drawer-header h2 {
+    flex-basis: 90%;
+  }
+
+  .drawer-header .btn-close {
+    flex-basis: 10%;
+    max-width: 2.25rem;
+  }
+
+  .drawer-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+
+  .drawer-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #cbd5e1;
+  }
+
+  /* ================
+     BUTTONS
+     ================ */
+
+  /* Primary Action - Save */
+  .btn-save {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-primary);
+    color: var(--color-secondary);
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+
+  .btn-save:hover {
+    background-color: var(--color-hover-dark);
+  }
+
+  .btn-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Danger Action - Delete */
+  .btn-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--color-error);
+    color: white;
+    font-weight: 500;
+  }
+
+  .btn-delete:hover {
+    opacity: 0.9;
+  }
+
+  .btn-delete:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Create Node Button */
+  .btn-create-node {
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    padding: 0.625rem 1rem;
+  }
+
+  .btn-create-node:hover {
+    background-color: var(--color-description-box);
+  }
+
+  /* Close & Remove Buttons */
+  .btn-close,
+  .btn-remove {
+    width: fit-content;
+    padding: 0.375rem;
+    border-radius: 1rem;
+    color: var(--color-error);
+  }
+
+  .btn-close:hover,
+  .btn-remove:hover {
+    background-color: var(--color-description-box);
+  }
+
+  .btn-remove {
+    width: 2.5rem;
+    height: 1.8rem;
+    align-items: flex-start;
+  }
+
+  /* Remove Attachment Button (positioned absolute) */
+  .btn-remove-attachment {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    background-color: rgb(239 68 68 / 0.9);
+    border-radius: 1rem;
+    color: white;
+    cursor: pointer;
+  }
+
+  /* Add Button (dashed border) */
+  .btn-add {
+    flex-basis: 100%;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    border: 1px dashed var(--color-description);
+    color: var(--color-description);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-add:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: scale(1.05);
+  }
+
+  /* Upload Button */
+  .btn-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    aspect-ratio: 1/1;
+    background-color: var(--color-secondary);
+    border: 2px dashed var(--color-description);
+    border-radius: 0.5rem;
+    color: var(--color-description);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-upload:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: scale(1.05);
+  }
+
+  /* Cancel Button */
+  .btn-cancel {
+    width: 40%;
+    background-color: #334155;
+    color: #cbd5e1;
+  }
+
+  .btn-cancel:hover {
+    background-color: #475569;
+    color: #f1f5f9;
+  }
+
+  /* Submit Node Button */
+  .btn-submit-node {
+    width: 40%;
+    padding: 0.5rem;
+    background-color: var(--color-primary);
+    color: var(--color-secondary);
+  }
+
+  .btn-submit-node:hover {
+    background-color: var(--color-hover-dark);
+  }
+
+  /* ================
+     FLOW NODES
+     ================ */
+
+  /* Base Node Style */
+  .node {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 1rem;
+    min-width: 180px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .node:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    transform: translateY(-2px);
+  }
+
+  /* Node Icon */
+  .node-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  /* Node Content */
+  .node-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .node-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .node-subtitle {
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
+  .node-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    background-color: var(--node-message-border);
+    color: white;
+    border-radius: 9999px;
+    font-size: 0.625rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    width: fit-content;
+  }
+
+  /* ----------------
+     Node Type: Trigger
+     ---------------- */
+  .node-trigger {
+    background: linear-gradient(
+      to bottom right,
+      var(--node-trigger-bg-from),
+      var(--node-trigger-bg-to)
+    );
+    border-color: var(--node-trigger-border);
+  }
+
+  .node-trigger .node-icon {
+    background-color: var(--node-trigger-border);
+  }
+
+  .node-trigger .node-title {
+    color: var(--node-trigger-title);
+  }
+
+  .node-trigger .node-subtitle {
+    color: var(--node-trigger-subtitle);
+  }
+
+  /* ----------------
+     Node Type: Message
+     ---------------- */
+  .node-message {
+    background: linear-gradient(
+      to bottom right,
+      var(--node-message-bg-from),
+      var(--node-message-bg-to)
+    );
+    border-color: var(--node-message-border);
+  }
+
+  .node-message .node-icon {
+    background-color: var(--node-message-border);
+  }
+
+  .node-message .node-title {
+    color: var(--node-message-title);
+  }
+
+  .node-message .node-subtitle {
+    color: var(--node-message-subtitle);
+  }
+
+  /* ----------------
+     Node Type: Comment
+     ---------------- */
+  .node-comment {
+    background: linear-gradient(
+      to bottom right,
+      var(--node-comment-bg-from),
+      var(--node-comment-bg-to)
+    );
+    border-color: var(--node-comment-border);
+  }
+
+  .node-comment .node-icon {
+    background-color: var(--node-comment-border);
+  }
+
+  .node-comment .node-title {
+    color: var(--node-comment-title);
+  }
+
+  .node-comment .node-subtitle {
+    color: var(--node-comment-subtitle);
+  }
+
+  /* ----------------
+     Node Type: Business Hours
+     ---------------- */
+  .node-business-hours {
+    background: linear-gradient(
+      to bottom right,
+      var(--node-business-bg-from),
+      var(--node-business-bg-to)
+    );
+    border-color: var(--node-business-border);
+  }
+
+  .node-business-hours .node-icon {
+    background-color: var(--node-business-border);
+  }
+
+  .node-business-hours .node-title {
+    color: var(--node-business-title);
+  }
+
+  .node-business-hours .node-subtitle {
+    color: var(--node-business-subtitle);
+  }
+
+  /* ----------------
+     Node Type: Status (Success/Failure)
+     ---------------- */
+  .node-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 9999px;
+    min-width: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .node-status:hover {
+    transform: scale(1.05);
+  }
+
+  .node-status-success {
+    background: linear-gradient(
+      to bottom right,
+      var(--node-success-bg-from),
+      var(--node-success-bg-to)
+    );
+    border-color: var(--node-success-border);
+    color: var(--node-success-text);
+  }
+
+  .node-status-failure {
+    background: linear-gradient(
+      to bottom right,
+      var(--node-failure-bg-from),
+      var(--node-failure-bg-to)
+    );
+    border-color: var(--node-failure-border);
+    color: var(--node-failure-text);
+  }
+
+  /* ----------------
+     Node Handles (connection points)
+     Uses !important to override Vue Flow defaults
+     ---------------- */
+  .node-handle {
+    width: 0.6rem !important;
+    height: 0.6rem !important;
+    border: 2px solid white !important;
+    border-radius: 1rem !important;
+  }
+
+  .node-handle-trigger {
+    background-color: var(--node-trigger-border) !important;
+  }
+
+  .node-handle-message {
+    background-color: var(--node-message-border) !important;
+  }
+
+  .node-handle-comment {
+    background-color: var(--node-comment-border) !important;
+  }
+
+  .node-handle-business {
+    background-color: var(--node-business-border) !important;
+  }
+
+  .node-handle-success {
+    background-color: var(--node-success-border) !important;
+  }
+
+  .node-handle-failure {
+    background-color: var(--node-failure-border) !important;
+  }
+}
+
+/* ========================================
+   UTILITIES LAYER - Animation Classes
+   ======================================== */
+@layer utilities {
+  /* Fade In */
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease forwards;
+  }
+
+  /* Fade Out */
+  .animate-fade-out {
+    animation: fadeOut 0.2s ease forwards;
+  }
+
+  /* Slide In from Right */
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease forwards;
+  }
+
+  /* Slide Out to Right */
+  .animate-slide-out-right {
+    animation: slideOutRight 0.3s ease forwards;
+  }
+
+  /* Keyframe Definitions */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
     }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideOutRight {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+}
+
+/* ========================================
+   RESPONSIVE - Mobile Styles (max-width: 600px)
+   ======================================== */
+@media (max-width: 600px) {
+  /* Typography */
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  h3 {
+    font-size: 0.875rem;
+  }
+
+  p {
+    font-size: 0.875rem;
+  }
+
+  /* Buttons */
+  button {
+    width: 8rem;
+    height: 1.75rem;
+    font-size: 0.7rem;
+    border-radius: 0.375rem;
+    padding: 0.25rem;
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+
+  .btn-remove-attachment {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 1rem;
+  }
+
+  /* Card */
+  .card {
+    width: 95%;
+    padding: 0.75rem;
+  }
+
+  /* Form Elements */
+  input,
+  textarea,
+  select {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    border-radius: 0.375rem;
+  }
+
+  /* Drawer */
+  .drawer-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .drawer-content {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .drawer-footer {
+    padding: 0.5rem 0.75rem;
   }
 }

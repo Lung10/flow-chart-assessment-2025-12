@@ -51,41 +51,22 @@ export interface DateTimeConnectorData {
 }
 
 // Union type for all node data
-export type FlowNodeData = TriggerData | SendMessageData | AddCommentData | DateTimeData | DateTimeConnectorData
+export type FlowNodeData =
+  | TriggerData
+  | SendMessageData
+  | AddCommentData
+  | DateTimeData
+  | DateTimeConnectorData
 
 // Base Node Interface
 export interface FlowNode {
+  // Predefined/system nodes use numeric IDs (e.g., trigger: 1), user-created nodes use string IDs (short hashes)
   id: number | string
+  // References parent's id (-1 means no parent/root node)
   parentId: number | string
   type: NodeType
   name?: string
   data: FlowNodeData
-}
-
-// Specific Node Types (for type narrowing)
-export interface TriggerNode extends FlowNode {
-  type: 'trigger'
-  data: TriggerData
-}
-
-export interface SendMessageNode extends FlowNode {
-  type: 'sendMessage'
-  data: SendMessageData
-}
-
-export interface AddCommentNode extends FlowNode {
-  type: 'addComment'
-  data: AddCommentData
-}
-
-export interface DateTimeNode extends FlowNode {
-  type: 'dateTime'
-  data: DateTimeData
-}
-
-export interface DateTimeConnectorNode extends FlowNode {
-  type: 'dateTimeConnector'
-  data: DateTimeConnectorData
 }
 
 // Vue Flow specific types
@@ -100,6 +81,7 @@ export interface VueFlowEdge {
   id: string
   source: string
   target: string
+  sourceHandle?: string
   type?: string
 }
 
@@ -109,4 +91,3 @@ export interface CreateNodeForm {
   description: string
   type: 'sendMessage' | 'addComment' | 'businessHours'
 }
-

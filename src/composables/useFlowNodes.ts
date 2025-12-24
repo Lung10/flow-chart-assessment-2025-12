@@ -1,13 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useQuery, useMutation } from '@tanstack/vue-query'
 import { useFlowChartStore } from '@/stores/flowChart'
 import type { FlowNode } from '@/types'
 
-// Simulated API - replace with actual API calls if needed
+// Simulated API for fetching nodes using TanStack Query
 const fetchNodes = async (): Promise<FlowNode[]> => {
-  // In a real app, this would be an API call
-  // For now, we'll import from the JSON file
-  const response = await import('@/../query.json')
-  return response.default as FlowNode[]
+  const response = await import('@/../query.json') // import the nodes from the JSON file
+  return response.default as FlowNode[] // return the nodes as an array of FlowNode objects
 }
 
 const updateNodeApi = async (node: FlowNode): Promise<FlowNode> => {
@@ -28,8 +26,8 @@ const createNodeApi = async (node: FlowNode): Promise<FlowNode> => {
 }
 
 export function useFlowNodes() {
+  // use the flow chart store to manage the nodes
   const store = useFlowChartStore()
-  const queryClient = useQueryClient()
 
   // Query for fetching nodes
   const nodesQuery = useQuery({
@@ -49,7 +47,7 @@ export function useFlowNodes() {
     mutationFn: updateNodeApi,
     onSuccess: (updatedNode) => {
       store.updateNode(String(updatedNode.id), updatedNode)
-      queryClient.invalidateQueries({ queryKey: ['flowNodes'] })
+      // Don't invalidate - we're using static JSON, refetch would overwrite local changes
     },
   })
 
@@ -58,7 +56,7 @@ export function useFlowNodes() {
     mutationFn: deleteNodeApi,
     onSuccess: (_, nodeId) => {
       store.deleteNode(nodeId)
-      queryClient.invalidateQueries({ queryKey: ['flowNodes'] })
+      // Don't invalidate - we're using static JSON, refetch would overwrite local changes
     },
   })
 
@@ -67,16 +65,14 @@ export function useFlowNodes() {
     mutationFn: createNodeApi,
     onSuccess: (newNode) => {
       store.addNode(newNode)
-      queryClient.invalidateQueries({ queryKey: ['flowNodes'] })
+      // Don't invalidate - we're using static JSON, refetch would overwrite newly added nodes
     },
   })
 
   return {
     // Query
     nodesQuery,
-    isLoading: nodesQuery.isLoading,
-    isError: nodesQuery.isError,
-    error: nodesQuery.error,
+    initializeNodes,
     // Mutations
     updateNode: updateNodeMutation.mutate,
     deleteNode: deleteNodeMutation.mutate,
@@ -84,8 +80,5 @@ export function useFlowNodes() {
     isUpdating: updateNodeMutation.isPending,
     isDeleting: deleteNodeMutation.isPending,
     isCreating: createNodeMutation.isPending,
-    // Helper
-    initializeNodes,
   }
 }
-

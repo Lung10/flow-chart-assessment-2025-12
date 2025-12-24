@@ -1,24 +1,23 @@
 <template>
-  <div class="flex items-center gap-3 p-3 bg-gradient-to-br from-amber-100 to-amber-200 border-2 border-amber-500 rounded-xl min-w-[180px] shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
-    <div class="flex items-center justify-center w-9 h-9 bg-amber-500 rounded-lg text-white">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-      </svg>
+  <div class="node node-trigger">
+    <div class="node-icon">
+      <Icon name="flash" :size="20" />
     </div>
-    <div class="flex flex-col gap-0.5">
-      <span class="text-xs font-medium text-amber-800 uppercase tracking-wide">Trigger</span>
-      <span class="text-sm font-semibold text-amber-900">
+    <div class="node-content">
+      <span class="node-subtitle uppercase tracking-wide">Trigger</span>
+      <span class="node-title">
         {{ triggerData.type === 'conversationOpened' ? 'Conversation Opened' : triggerData.type }}
       </span>
     </div>
-    
+
     <!-- Output Handle -->
-    <Handle type="source" :position="Position.Bottom" class="!w-3 !h-3 !bg-amber-500 !border-2 !border-white" />
+    <Handle type="source" :position="Position.Bottom" class="node-handle node-handle-trigger" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { Handle, Position } from '@vue-flow/core'
+import Icon from '@/components/icons/Icon.vue'
 import type { FlowNode, TriggerData } from '@/types'
 
 interface Props {
