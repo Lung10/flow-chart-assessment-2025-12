@@ -23,6 +23,9 @@
     <button class="btn-save" @click="handleSave" :disabled="isUpdating">
       {{ isUpdating ? 'Saving...' : 'Save Changes' }}
     </button>
+
+    <!-- Spacer for scroll padding -->
+    <div class="shrink-0 h-1"></div>
   </div>
 </template>
 
