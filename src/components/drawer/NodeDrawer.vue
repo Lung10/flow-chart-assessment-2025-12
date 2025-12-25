@@ -89,7 +89,8 @@ watch(
 
 // Get the title of the selected node
 const nodeTitle = computed(() => {
-  return selectedNode.value?.name || '' // if no selected node, return empty string
+  if (selectedNode.value?.type === 'trigger') return 'Trigger' // if the selected node is a trigger, return 'Trigger' as title
+  return selectedNode.value?.name || ''
 })
 // Handle closing the drawer
 function handleClose() {
