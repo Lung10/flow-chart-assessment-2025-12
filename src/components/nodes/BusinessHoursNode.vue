@@ -8,7 +8,7 @@
     </div>
     <div class="node-content">
       <span class="node-title">{{ props.data.name || 'Business Hours' }}</span>
-      <span class="node-subtitle">{{ dateTimeData.timezone }}</span>
+      <span class="node-subtitle">{{ businessHoursData.timezone }}</span>
     </div>
 
     <!-- Output Handles for Success and Failure -->
@@ -33,7 +33,7 @@
 import { computed } from 'vue'
 import { Handle, Position } from '@vue-flow/core'
 import Icon from '@/components/icons/Icon.vue'
-import type { FlowNode, DateTimeData } from '@/types'
+import type { FlowNode, BusinessHoursData } from '@/types'
 
 interface Props {
   data: FlowNode
@@ -41,5 +41,5 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const dateTimeData = computed(() => props.data.data as DateTimeData)
+const businessHoursData = computed(() => props.data.data as BusinessHoursData)
 </script>

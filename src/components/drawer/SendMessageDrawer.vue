@@ -77,10 +77,11 @@ const props = defineProps<Props>()
 const emit = defineEmits<{ saved: [] }>()
 const { updateNode, isUpdating } = useFlowNodes()
 
-const title = ref(props.node.name || '')
+const title = ref<string>(props.node.name || '')
 const textPayloads = ref<string[]>([])
 const attachments = ref<string[]>([])
 
+// watch for changes to the node data
 watch(
   () => props.node,
   (node) => {
@@ -96,10 +97,11 @@ watch(
   { immediate: true },
 )
 
+// Handle saving the node data
 function handleSave() {
   const payload: MessagePayload[] = [
-    ...textPayloads.value.map((text) => ({ type: 'text' as const, text })),
-    ...attachments.value.map((attachment) => ({ type: 'attachment' as const, attachment })),
+    ...textPayloads.value.map((text) => ({ type: 'text' as const, text })), // map the text payloads to the payload array
+    ...attachments.value.map((attachment) => ({ type: 'attachment' as const, attachment })), // map the attachments to the payload array
   ]
 
   // update the node data
@@ -112,14 +114,17 @@ function handleSave() {
   emit('saved')
 }
 
+// Add a new text message
 function addText() {
   textPayloads.value.push('')
 }
 
+// Remove a text message by index
 function removeText(index: number) {
   textPayloads.value.splice(index, 1)
 }
 
+// Handle file upload
 function handleFileUpload(event: Event) {
   const target = event.target as HTMLInputElement
   if (target.files && target.files[0]) {
@@ -128,6 +133,7 @@ function handleFileUpload(event: Event) {
   }
 }
 
+// Remove an attachment by index
 function removeAttachment(index: number) {
   attachments.value.splice(index, 1)
 }

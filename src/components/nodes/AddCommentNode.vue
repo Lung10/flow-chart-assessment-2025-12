@@ -32,6 +32,6 @@ const commentData = computed(() => props.data.data as AddCommentData)
 
 const truncatedComment = computed(() => {
   const comment = commentData.value.comment
-  return comment.length > 40 ? comment.substring(0, 40) + '...' : comment
+  return comment.length > 40 ? comment.substring(0, 40) + '...' : comment // truncate the comment if it is longer than 40 characters
 })
 </script>

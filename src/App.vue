@@ -149,6 +149,7 @@ onEdgeUpdate(({ edge, connection }) => {
   }
 })
 
+// Initialize nodes when the component mounts
 onMounted(() => {
   initializeNodes()
 })

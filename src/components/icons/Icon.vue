@@ -1,11 +1,13 @@
 <template>
   <!-- Use Material Design Icons -->
-  <svg-icon type="mdi" :path="iconPath" :size="size" />
+  <svg-icon type="mdi" :path="iconPath" :size="props.size" />
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 // @ts-ignore - no types available for this package
 import SvgIcon from '@jamescoyle/vue-icon'
+import type { IconMap } from '@/types'
 import {
   mdiClose,
   mdiPlus,
@@ -18,16 +20,14 @@ import {
   mdiPaperclip,
 } from '@mdi/js'
 
-interface Props {
+// Define props with default values
+const props = defineProps<{
   name: string
-  size?: number
-}
+  size: number
+}>()
 
-const props = withDefaults(defineProps<Props>(), {
-  size: 20,
-})
-
-const icons: Record<string, string> = {
+// Map of icon names to their SVG paths
+const icons: IconMap = {
   close: mdiClose,
   plus: mdiPlus,
   check: mdiCheck,
@@ -39,5 +39,8 @@ const icons: Record<string, string> = {
   attachment: mdiPaperclip,
 }
 
-const iconPath = icons[props.name] || mdiClose
+// Get the icon path based on the name prop, fallback to close icon if not found
+const iconPath = computed(() => {
+  return icons[props.name] || mdiClose
+})
 </script>

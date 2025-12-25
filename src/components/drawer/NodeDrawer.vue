@@ -72,8 +72,8 @@ const { deleteNode, isDeleting } = useFlowNodes()
 const selectedNode = computed(() => store.selectedNode)
 
 // State for closing animation and visibility
-const isClosing = ref(false)
-const isVisible = ref(false)
+const isClosing = ref<boolean>(false)
+const isVisible = ref<boolean>(false)
 
 // Sync visibility with store, handle closing animation
 watch(
@@ -89,22 +89,8 @@ watch(
 
 // Get the title of the selected node
 const nodeTitle = computed(() => {
-  if (!selectedNode.value) return ''
-  return selectedNode.value.name || getDefaultTitle(selectedNode.value.type)
+  return selectedNode.value?.name || '' // if no selected node, return empty string
 })
-
-// Get the default title of the selected node
-function getDefaultTitle(type: string): string {
-  const titles: Record<string, string> = {
-    trigger: 'Trigger',
-    sendMessage: 'Send Message',
-    addComment: 'Add Comment',
-    dateTime: 'Business Hours',
-    dateTimeConnector: 'Connector',
-  }
-  return titles[type] || 'Node'
-}
-
 // Handle closing the drawer
 function handleClose() {
   isClosing.value = true
@@ -125,7 +111,7 @@ function handleDelete() {
 
 // Check if the selected node is editable
 const isEditable = computed(() => {
-  if (!selectedNode.value) return false
-  return selectedNode.value.type !== 'dateTimeConnector' && selectedNode.value.type !== 'trigger'
+  if (!selectedNode.value) return false // if no selected node, return false
+  return selectedNode.value.type !== 'dateTimeConnector' && selectedNode.value.type !== 'trigger' // if the selected node is a dateTimeConnector or trigger, return false
 })
 </script>

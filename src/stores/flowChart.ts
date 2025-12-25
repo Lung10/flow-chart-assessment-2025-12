@@ -7,9 +7,9 @@ export const useFlowChartStore = defineStore('flowChart', () => {
   const nodes = ref<FlowNode[]>([])
   const nodePositions = ref<Map<string, { x: number; y: number }>>(new Map())
   const selectedNodeId = ref<string | null>(null)
-  const isDrawerOpen = ref(false)
+  const isDrawerOpen = ref<boolean>(false)
 
-  // Getters
+  // Getters for the selected node and the vue flow nodes and edges
   const selectedNode = computed(() => {
     if (!selectedNodeId.value) return null
     return nodes.value.find((node) => String(node.id) === selectedNodeId.value) || null
@@ -42,19 +42,21 @@ export const useFlowChartStore = defineStore('flowChart', () => {
 
     nodes.value.forEach((node) => {
       if (node.parentId !== -1 && node.parentId !== null) {
+        // if the node has a parent
         const edge: VueFlowEdge = {
-          id: `e-${node.parentId}-${node.id}`,
-          source: String(node.parentId),
-          target: String(node.id),
+          // create an edge object with the parent id and the node id
+          id: `e-${node.parentId}-${node.id}`, // the edge id
+          source: String(node.parentId), // the parent id
+          target: String(node.id), // the node id
         }
 
-        // If this is a dateTimeConnector, connect from the correct handle on the parent
+        // If this is a dateTimeConnector node, connect from the correct handle on the parent
         if (node.type === 'dateTimeConnector') {
           const connectorData = node.data as { connectorType: 'success' | 'failure' }
           edge.sourceHandle = connectorData.connectorType // 'success' or 'failure'
         }
 
-        edges.push(edge)
+        edges.push(edge) // add the edge to the edges array
       }
     })
 
@@ -62,21 +64,25 @@ export const useFlowChartStore = defineStore('flowChart', () => {
   })
 
   // Actions
+  // Set the nodes in the store
   function setNodes(newNodes: FlowNode[]) {
     // Create a mutable copy - Vue Query returns readonly arrays
     nodes.value = [...newNodes]
   }
 
+  // Select a node and open the drawer
   function selectNode(nodeId: string | null) {
     selectedNodeId.value = nodeId
     isDrawerOpen.value = nodeId !== null
   }
 
+  // Close the drawer
   function closeDrawer() {
     isDrawerOpen.value = false
     selectedNodeId.value = null
   }
 
+  // Update a node in the store
   function updateNode(nodeId: string, updates: Partial<FlowNode>) {
     const index = nodes.value.findIndex((node) => String(node.id) === nodeId)
     if (index !== -1) {
@@ -84,6 +90,7 @@ export const useFlowChartStore = defineStore('flowChart', () => {
     }
   }
 
+  // Delete a node and its children
   function deleteNode(nodeId: string) {
     // Find child nodes (nodes with parentId === nodeId) to cascade delete
     const childNodeIds = nodes.value
@@ -104,10 +111,12 @@ export const useFlowChartStore = defineStore('flowChart', () => {
     }
   }
 
+  // Add a node to the store
   function addNode(node: FlowNode) {
     nodes.value = [...nodes.value, node]
   }
 
+  // Update the parent of a node
   function updateNodeParent(nodeId: string, newParentId: string | number) {
     const index = nodes.value.findIndex((node) => String(node.id) === nodeId)
     if (index !== -1) {
@@ -117,6 +126,7 @@ export const useFlowChartStore = defineStore('flowChart', () => {
     }
   }
 
+  // Update the position of a node
   function updateNodePosition(nodeId: string, position: { x: number; y: number }) {
     // Store the new position so it persists
     nodePositions.value.set(nodeId, position)

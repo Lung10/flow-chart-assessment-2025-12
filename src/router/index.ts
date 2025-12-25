@@ -7,8 +7,8 @@ const router = createRouter({
     {
       // home route
       path: '/',
-      name: 'home',
-      component: () => Promise.resolve({ template: '' }), // no component needed - App.vue handles everything
+      name: 'home', // name of the route
+      component: () => Promise.resolve({ template: '' }), // no component needed - App.vue handles everything, this is just a placeholder
     },
   ],
 })

@@ -74,7 +74,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useFlowNodes } from '@/composables/useFlowNodes'
-import type { FlowNode, DateTimeData, TimeSlot } from '@/types'
+import type { FlowNode, BusinessHoursData, TimeSlot } from '@/types'
 
 interface Props {
   node: FlowNode
@@ -97,9 +97,9 @@ const days = [
   { key: 'sun', label: 'Sun' },
 ] as const
 
-const title = ref(props.node.name || '')
+const title = ref<string>(props.node.name || '')
 const times = ref<TimeSlot[]>([])
-const timezone = ref('UTC')
+const timezone = ref<string>('UTC')
 const invalidDays = ref<Set<string>>(new Set())
 
 // watch for changes to the node data
@@ -107,7 +107,7 @@ watch(
   () => props.node,
   (node) => {
     title.value = node.name || '' // set the title
-    const data = node.data as DateTimeData
+    const data = node.data as BusinessHoursData
     timezone.value = data.timezone // set the timezone
 
     // Ensure all days have time slots (initialize missing ones)
@@ -157,7 +157,7 @@ function handleSave() {
     return
   }
 
-  const nodeData = props.node.data as DateTimeData
+  const nodeData = props.node.data as BusinessHoursData
   // update the node data
   updateNode({
     ...props.node,

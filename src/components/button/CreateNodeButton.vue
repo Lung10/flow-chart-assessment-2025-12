@@ -1,7 +1,7 @@
 <template>
   <!-- Create Button -->
   <button class="btn-create-node" @click="openCard">
-    <Icon name="plus" />
+    <Icon name="plus" :size="20" />
     Create New Node
   </button>
 
@@ -11,7 +11,7 @@
       <header class="form-header">
         <h2>Create New Node</h2>
         <button class="btn-close" @click="closeCard" aria-label="Close">
-          <Icon name="close" />
+          <Icon name="close" :size="20" />
         </button>
       </header>
 
@@ -29,8 +29,8 @@
           <span v-if="errors.title" class="text-xs text-(--color-error)">{{ errors.title }}</span>
         </div>
 
-        <!-- Description input field-->
-        <div class="form-field">
+        <!-- Description input field (hidden for businessHours) -->
+        <div v-if="form.type !== 'businessHours'" class="form-field">
           <h3>Description<span class="text-(--color-error)">*</span></h3>
           <textarea
             v-model="form.description"
@@ -78,8 +78,8 @@ import type {
   FlowNode,
   SendMessageData,
   AddCommentData,
-  DateTimeData,
-  DateTimeConnectorData,
+  BusinessHoursData,
+  StatusData,
 } from '@/types'
 
 // Get functions from composables
@@ -89,7 +89,7 @@ const { errors, validateForm, clearErrors } = useNodeValidation()
 // Use Pinia store for flow chart data
 const store = useFlowChartStore()
 
-const isCardOpen = ref(false) // initial state of the card to be closed
+const isCardOpen = ref<boolean>(false) // initial state of the card to be closed
 
 const form = ref<CreateNodeForm>({
   // initial state of the form to be empty and set to sendMessage type as default
@@ -123,6 +123,7 @@ function generateUniqueId(): string {
     }
   }
 
+  alert(`Unable to generate unique ID after ${maxAttempts} attempts`) // show alert box if unable to generate a unique id
   console.error('Unable to generate unique ID after', maxAttempts, 'attempts')
   return '' // return an empty string if the unique id is not found after the max attempts
 }
@@ -133,10 +134,10 @@ function handleSubmit() {
 
   const nodeId = generateUniqueId() // generate a unique id for the new node
   if (nodeId === '') {
-    return // exit if the unique id is empty after the max attempts
+    return // exit if failed to generate a unique id
   }
 
-  let nodeData: SendMessageData | AddCommentData | DateTimeData
+  let nodeData: SendMessageData | AddCommentData | BusinessHoursData
 
   // Assign node data based on form type
   switch (form.value.type) {
@@ -190,7 +191,7 @@ function handleSubmit() {
         parentId: nodeId, // Connected to Business Hours node
         type: 'dateTimeConnector',
         name: 'Success',
-        data: { connectorType: 'success' } as DateTimeConnectorData,
+        data: { connectorType: 'success' } as StatusData,
       }
       createNode(successNode) // create the success node
 
@@ -200,7 +201,7 @@ function handleSubmit() {
         parentId: nodeId, // Connected to Business Hours node
         type: 'dateTimeConnector',
         name: 'Failure',
-        data: { connectorType: 'failure' } as DateTimeConnectorData,
+        data: { connectorType: 'failure' } as StatusData,
       }
       createNode(failureNode) // create the failure node
       closeCard() // close the card

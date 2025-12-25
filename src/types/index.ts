@@ -3,7 +3,7 @@ export type NodeType = 'trigger' | 'sendMessage' | 'addComment' | 'dateTime' | '
 
 export type TriggerType = 'conversationOpened'
 export type ConnectorType = 'success' | 'failure'
-export type DateTimeAction = 'businessHours'
+export type BusinessHoursAction = 'businessHours'
 
 // Payload Types
 export interface TextPayload {
@@ -39,14 +39,14 @@ export interface AddCommentData {
   comment: string
 }
 
-export interface DateTimeData {
+export interface BusinessHoursData {
   times: TimeSlot[]
   connectors: string[]
   timezone: string
-  action: DateTimeAction
+  action: BusinessHoursAction
 }
 
-export interface DateTimeConnectorData {
+export interface StatusData {
   connectorType: ConnectorType
 }
 
@@ -55,8 +55,8 @@ export type FlowNodeData =
   | TriggerData
   | SendMessageData
   | AddCommentData
-  | DateTimeData
-  | DateTimeConnectorData
+  | BusinessHoursData
+  | StatusData
 
 // Base Node Interface
 export interface FlowNode {
@@ -90,4 +90,8 @@ export interface CreateNodeForm {
   title: string
   description: string
   type: 'sendMessage' | 'addComment' | 'businessHours'
+}
+
+export type IconMap = {
+  [key: string]: string
 }

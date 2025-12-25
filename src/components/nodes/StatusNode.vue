@@ -24,7 +24,7 @@
 import { computed } from 'vue'
 import { Handle, Position } from '@vue-flow/core'
 import Icon from '@/components/icons/Icon.vue'
-import type { FlowNode, DateTimeConnectorData } from '@/types'
+import type { FlowNode, StatusData } from '@/types'
 
 interface Props {
   data: FlowNode
@@ -32,7 +32,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const connectorData = computed(() => props.data.data as DateTimeConnectorData)
+const connectorData = computed(() => props.data.data as StatusData)
 
 const isSuccess = computed(() => connectorData.value.connectorType === 'success')
 </script>

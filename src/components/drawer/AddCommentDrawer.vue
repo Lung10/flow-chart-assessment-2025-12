@@ -44,8 +44,8 @@ const emit = defineEmits<{ saved: [] }>()
 // use the flow nodes composable to update the node data
 const { updateNode, isUpdating } = useFlowNodes()
 
-const title = ref(props.node.name || '')
-const comment = ref('')
+const title = ref<string>(props.node.name || '')
+const comment = ref<string>('')
 
 // watch for changes to the node data
 watch(
